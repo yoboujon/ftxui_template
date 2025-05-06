@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <ostream>
+#include <cstdint>
 
 enum class LoggerType : uint8_t
 {
