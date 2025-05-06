@@ -13,7 +13,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 # Dependencies
 include(dependencies.cmake)
 
-set(TARGET rmlui_test)
+set(TARGET ftxui_template)
 set(SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 add_executable(${TARGET}
     ${SRC}/ui.cpp
