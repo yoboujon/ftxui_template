@@ -19,6 +19,10 @@ add_executable(${TARGET}
     ${SRC}/ui.cpp
     ${SRC}/logger.cpp
     ${SRC}/event.cpp
+    # Pages
+    ${SRC}/pages/page1.cpp
+    ${SRC}/pages/page2.cpp
+    # Main
     ${SRC}/main.cpp
 )
 

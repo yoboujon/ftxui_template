@@ -2,14 +2,19 @@
 #include <string>
 #include <thread>
 
-#include "ui.h"
 #include "event.h"
+#include "logger.h"
+#include "ui.h"
+
+#include "pages/page1.h"
+#include "pages/page2.h"
 
 using namespace ftxui;
 
-std::thread t_instance;
+UserInterface& ui = UserInterface::GetInstance();
+Logger& logger = Logger::GetInstance();
 
-static inline void handle(EventHandler &handler, const EventPayload &payload)
+static inline void loop_event(EventHandler &handler, const EventPayload &payload)
 {
     UserInterface &ui = UserInterface::GetInstance();
 
@@ -26,11 +31,13 @@ int main(int argc, char **argv)
     UserInterface &ui = UserInterface::GetInstance();
 
     // Page declaration
-    // ScreenPageDebugger debugger(handler, screen);
-    // screen.add_screen(&launcher);
+    Page1 page1(handler);
+    Page2 page2(handler);
+    ui.add_screen(&page1);
+    ui.add_screen(&page2);
 
     // Event handler function
-    handler.set_handler(handle);
+    handler.set_handler(loop_event);
 
     // Main logic
     std::thread t_event(&EventHandler::loop, &handler);

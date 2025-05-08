@@ -1,5 +1,4 @@
-#include "pages/launcher.h"
-#include "loader.h"
+#include "pages/page2.h"
 
 #include "ftxui/component/component.hpp"
 #include "ftxui/component/component_base.hpp"
@@ -9,49 +8,44 @@
 
 using namespace ftxui;
 
-static const std::vector<std::string> _launcher_entries = {
-    "Legacy",
-    "Debug"};
-
-static const std::vector<std::string> _library_entries = {
-    "Reply",
-    "UDP_IP",
-    "Emit",
-    "BOUCHON",
-    "Push"};
-
-inline void ScreenPageLauncher::on_launch()
+inline const std::vector<std::string> create_entries(const size_t num)
 {
-    this->send_event(EventType::SWITCH_SCREEN, static_cast<size_t>(1));
-    // const std::string name = get_simple_name(_library_entries[_library_selected]);
-    this->send_event(EventType::LAUNCH_INSTANCE, _library_entries[_library_selected]);
+    std::vector<std::string> ret;
+    for (size_t i = 0; i < num; i++)
+        ret.push_back("Sample " + std::to_string(num));
+    return ret;
 }
 
-ScreenPageLauncher::ScreenPageLauncher(EventHandler &handler)
-    : ScreenPage(handler)
+static const std::vector<std::string> _entries = create_entries(50);
+
+inline void Page2::change_screen()
 {
-    // Will be used later: for now crashes the launcher because it instanciate some values...
-    // _library_entries = get_libraries();
-    _library_selected = 0;
-    _library = Radiobox(&_library_entries, &_library_selected);
+    this->send_event(EventType::SWITCH_SCREEN, static_cast<size_t>(0));
+}
 
-    _launcher_selected = 0;
-    _launcher = Radiobox(&_launcher_entries, &_launcher_selected);
+inline Element Page2::render_radiobox()
+{
+    return vbox({window(text("Select Sample"),
+                        _radiobox->Render() | vscroll_indicator | frame) |
+                 center | flex}) |
+           xflex_grow;
+}
 
-    Component library_selection = Renderer(_library, [&]
-                                           { return vbox({window(text("Select Library"),
-                                                                 _library->Render() | vscroll_indicator | frame) |
-                                                          center | flex}) |
-                                                    xflex_grow; });
-    Component launcher_selection = Renderer(_launcher, [&]
-                                            { return vbox({window(text("Select launcher"),
-                                                                  _launcher->Render() | vscroll_indicator | frame) |
-                                                           center | flex}); });
+inline Element Page2::render_button()
+{
+    return vbox({_button->Render()}) | center | xflex;
+}
 
-    _launch_button = Container::Vertical({Button("Launch", [&]
-                                                 { return on_launch(); })});
-    Component launch = Renderer(_launch_button, [&]
-                                { return vbox({_launch_button->Render()}) | center | xflex; });
+Page2::Page2(EventHandler &handler)
+    : Page(handler), _selected(0), _radiobox(Radiobox(&_entries, &_selected))
+{
+    Component radiobox_component = Renderer(_radiobox, [&]
+                                            { return render_radiobox(); });
 
-    _page = Container::Vertical({Container::Horizontal({library_selection, launcher_selection, launch}) | flex});
+    _button = Container::Vertical({Button("Go to Page1", [&]
+                                          { return change_screen(); })});
+    Component button_component = Renderer(_button, [&]
+                                          { return render_button(); });
+
+    _page = Container::Vertical({Container::Horizontal({button_component, radiobox_component}) | flex});
 }

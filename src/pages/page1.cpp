@@ -1,8 +1,11 @@
-#include "pages/debugger.h"
+#include "pages/page1.h"
+
 #include "logger.h"
+#include "ui.h"
 
-#include "toolBox.h"
-
+#include <ctime>
+#include <cstring>
+#include <cstdint>
 #include "ftxui/component/component.hpp"
 #include "ftxui/component/component_base.hpp"
 #include "ftxui/component/event.hpp"
@@ -12,8 +15,20 @@
 using namespace ftxui;
 
 constexpr uint8_t LOGGER_OFFSET = 7;
+static UserInterface &ui = UserInterface::GetInstance();
+static Logger &logger = Logger::GetInstance();
+static char time_buffer[11];
 
-inline ftxui::Element ScreenPageDebugger::transform(ftxui::InputState state)
+inline static const char *get_time_str(uint64_t epoch)
+{
+    std::tm epoch_time;
+    const std::time_t time_epoch = epoch;
+    memcpy(&epoch_time, localtime(&time_epoch), sizeof(struct tm));
+    snprintf(time_buffer, 12, "[%02d:%02d:%02d]", epoch_time.tm_hour, epoch_time.tm_min, epoch_time.tm_sec);
+    return time_buffer;
+}
+
+inline ftxui::Element Page1::transform(ftxui::InputState state)
 {
     if (state.is_placeholder)
         state.element |= dim;
@@ -21,60 +36,59 @@ inline ftxui::Element ScreenPageDebugger::transform(ftxui::InputState state)
     if (state.focused)
     {
         state.element |= color(Color::White);
-        input_selected = true;
+        _input_selected = true;
     }
     else
     {
-        input_selected = false;
+        _input_selected = false;
     }
 
     return state.element;
 }
 
-inline bool ScreenPageDebugger::catch_event(Event event)
+inline bool Page1::catch_event(Event event)
 {
     if (event.is_character())
     {
         // Checking if it is a command...
     }
 
-    const int size = _render.get_screen()->dimy();
-    log_buffer.set_max_size(size - LOGGER_OFFSET);
+    const int size = ui.get_screen()->dimy();
+    logger.set_max_size(size - LOGGER_OFFSET);
     if (event == Event::Return)
     {
-        send_event(EventType::SEND_COMMAND, cmd_str);
+        logger.push_back(_input_str, LoggerType::PRINT);
     }
     return (event == Event::Return);
 }
 
-ftxui::Element ScreenPageDebugger::render_input()
+ftxui::Element Page1::render_input()
 {
     Element arrow = text("> ");
-    if (input_selected)
+    if (_input_selected)
         arrow |= bgcolor(Color::White) | color(Color::Black);
     else
         arrow |= color(Color::Default) | bgcolor(Color::Default);
 
     return vbox({separatorEmpty(),
-                 text("Send an event"),
+                 text("Send a command"),
                  hbox({arrow,
-                       input_event->Render()})});
+                       _input_component->Render()})});
 }
 
-ftxui::Element ScreenPageDebugger::render_log()
+ftxui::Element Page1::render_log()
 {
     Elements log_lines;
-    for (const auto &logger : log_buffer.get_buffer())
+    for (const auto &logger : logger.get_buffer())
     {
-        if(logger.type == LoggerType::STUB) {
-            log_lines.push_back(hbox({
-                text(get_time_str(logger.epoch)) | dim,
-                text(logger.str)
-            }));
-        } else {
-            log_lines.push_back(hbox({
-                text(logger.str) | italic | dim
-            }));
+        if (logger.type == LoggerType::PRINT)
+        {
+            log_lines.push_back(hbox({text(get_time_str(logger.epoch)) | dim,
+                                      text(logger.str)}));
+        }
+        else if (logger.type == LoggerType::COMMAND)
+        {
+            log_lines.push_back(hbox({text(logger.str) | italic | dim}));
         }
     }
 
@@ -86,28 +100,28 @@ ftxui::Element ScreenPageDebugger::render_log()
            flex;
 }
 
-ftxui::Element ScreenPageDebugger::render_status()
+ftxui::Element Page1::render_status()
 {
     return window(text("status") | hcenter | bold, text("content") | center | dim, BorderStyle::EMPTY) | flex | size(WIDTH, GREATER_THAN, 30);
 }
 
-ScreenPageDebugger::ScreenPageDebugger(EventHandler &handler, ScreenRender &sr)
-    : ScreenPage(handler), _render(sr), input_selected(false)
+Page1::Page1(EventHandler &handler)
+    : Page(handler), _input_selected(false)
 {
-    input_option.transform = [&](const InputState state)
+    _input_option.transform = [&](const InputState state)
     {
         return this->transform(state);
     };
 
-    input_event = Input(&cmd_str, "Press 'enter' to send the event. Type '/help' for commands.", input_option);
+    _input_component = Input(&_input_str, "Press 'enter' to send the text.", _input_option);
 
-    Component input = Renderer(input_event, [&]()
+    Component input = Renderer(_input_component, [&]()
                                { return render_input(); });
 
     input |= CatchEvent(
         [&](const Event &event)
         {
-            return this->catch_event(event);
+            return catch_event(event);
         });
 
     Component log = Renderer([&]()
@@ -122,9 +136,4 @@ ScreenPageDebugger::ScreenPageDebugger(EventHandler &handler, ScreenRender &sr)
             yflex,
         input,
     });
-}
-
-Logger *ScreenPageDebugger::get_logger()
-{
-    return &log_buffer;
 }
