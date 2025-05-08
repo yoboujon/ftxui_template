@@ -22,9 +22,9 @@ static char time_buffer[11];
 inline static const char *get_time_str(uint64_t epoch)
 {
     std::tm epoch_time;
-    const std::time_t time_epoch = epoch;
+    const std::time_t time_epoch = epoch/1000;
     memcpy(&epoch_time, localtime(&time_epoch), sizeof(struct tm));
-    snprintf(time_buffer, 12, "[%02d:%02d:%02d]", epoch_time.tm_hour, epoch_time.tm_min, epoch_time.tm_sec);
+    snprintf(time_buffer, 11, "[%02d:%02d:%02d]", epoch_time.tm_hour, epoch_time.tm_min, epoch_time.tm_sec);
     return time_buffer;
 }
 
@@ -58,6 +58,7 @@ inline bool Page1::catch_event(Event event)
     if (event == Event::Return)
     {
         logger.push_back(_input_str, LoggerType::PRINT);
+        _input_str = "";
     }
     return (event == Event::Return);
 }
@@ -83,8 +84,8 @@ ftxui::Element Page1::render_log()
     {
         if (logger.type == LoggerType::PRINT)
         {
-            log_lines.push_back(hbox({text(get_time_str(logger.epoch)) | dim,
-                                      text(logger.str)}));
+            log_lines.push_back(hbox({text(get_time_str(logger.epoch)) | color(Color::GrayDark),
+                                      text(" "+logger.str)}));
         }
         else if (logger.type == LoggerType::COMMAND)
         {
