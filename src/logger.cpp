@@ -11,6 +11,10 @@ Logger::Logger()
 {
 }
 
+Logger::~Logger()
+{
+}
+
 void Logger::set_max_size(int size)
 {
     if (size == _maxSize)
