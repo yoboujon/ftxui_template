@@ -18,9 +18,9 @@ public:
     }
 
     ftxui::ScreenInteractive *get_screen();
-    void add_screen(ScreenPage *p);
+    void add_screen(Page *p);
     void select_screen(size_t index);
-    void select_screen(const ScreenPage *p);
+    void select_screen(const Page *p);
     void start();
     void update();
 
@@ -29,7 +29,7 @@ private:
     ~UserInterface();
 
     ftxui::ScreenInteractive _screen;
-    std::vector<ScreenPage *> _pages;
+    std::vector<Page *> _pages;
     ftxui::Component _page_container;
     ftxui::Component _main_container;
     ftxui::Component _main_renderer;

@@ -4,11 +4,11 @@
 #include <ftxui/component/component_base.hpp>
 #include "event.h"
 
-class ScreenPage : public Event
+class Page : public EventPage
 {
 public:
-    ScreenPage(EventHandler &handler)
-        : Event(handler), _page()
+    Page(EventHandler &handler)
+        : EventPage(handler), _page()
     {
     }
 

@@ -19,7 +19,7 @@ ftxui::ScreenInteractive *UserInterface::get_screen()
     return &_screen;
 }
 
-void UserInterface::add_screen(ScreenPage *p)
+void UserInterface::add_screen(Page *p)
 {
     _pages.push_back(p);
 }
@@ -29,9 +29,9 @@ void UserInterface::select_screen(size_t index)
     _page_index = index;
 }
 
-void UserInterface::select_screen(const ScreenPage *p)
+void UserInterface::select_screen(const Page *p)
 {
-    const typename std::vector<ScreenPage *>::iterator it = std::find(_pages.begin(), _pages.end(), p);
+    const typename std::vector<Page *>::iterator it = std::find(_pages.begin(), _pages.end(), p);
     const size_t index = it - _pages.begin();
     select_screen(index);
 }

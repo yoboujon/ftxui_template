@@ -1,16 +1,15 @@
 #ifndef HEADER_EVENT_FTXUI
 #define HEADER_EVENT_FTXUI
 
-#include <deque>
 #include <any>
+#include <deque>
 #include <functional>
 #include <mutex>
 
 enum class EventType : uint8_t
 {
     SWITCH_SCREEN,
-    SEND_COMMAND,
-    LAUNCH_INSTANCE,
+    SEND_TEXT,
     STOP,
 };
 
@@ -30,7 +29,7 @@ public:
 
 protected:
     void add_event(const EventPayload &payload);
-    friend class Event;
+    friend class EventPage;
 
 private:
     bool _is_running;
@@ -39,10 +38,10 @@ private:
     std::mutex _mutex;
 };
 
-class Event
+class EventPage
 {
 public:
-    Event(EventHandler &eventhandler);
+    EventPage(EventHandler &eventhandler);
     void send_event(const EventPayload &payload);
     void send_event(const EventType &type, std::any data = {});
 

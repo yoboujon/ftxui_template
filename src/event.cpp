@@ -6,19 +6,19 @@
 
 constexpr int64_t EVENT_LOOP_WAIT_MS = 100;
 
-// Event
+// EventPage
 
-Event::Event(EventHandler &eventhandler)
+EventPage::EventPage(EventHandler &eventhandler)
     : _event_handler(eventhandler)
 {
 }
 
-void Event::send_event(const EventPayload &payload)
+void EventPage::send_event(const EventPayload &payload)
 {
     _event_handler.add_event(payload);
 }
 
-void Event::send_event(const EventType &type, std::any data)
+void EventPage::send_event(const EventType &type, std::any data)
 {
     _event_handler.add_event({type, data});
 }
