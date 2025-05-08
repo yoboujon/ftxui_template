@@ -22,6 +22,7 @@ static inline void loop_event(EventHandler &handler, const EventPayload &payload
         handler.stop();
     else if (payload.type == EventType::SWITCH_SCREEN)
         ui.select_screen(std::any_cast<size_t>(payload.data));
+    ui.update();
 }
 
 int main(int argc, char **argv)
