@@ -12,7 +12,7 @@ inline const std::vector<std::string> create_entries(const size_t num)
 {
     std::vector<std::string> ret;
     for (size_t i = 0; i < num; i++)
-        ret.push_back("Sample " + std::to_string(num));
+        ret.push_back("Sample " + std::to_string(i));
     return ret;
 }
 
