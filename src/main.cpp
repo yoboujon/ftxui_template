@@ -16,8 +16,6 @@ Logger& logger = Logger::GetInstance();
 
 static inline void loop_event(EventHandler &handler, const EventPayload &payload)
 {
-    UserInterface &ui = UserInterface::GetInstance();
-
     if (payload.type == EventType::STOP)
         handler.stop();
     else if (payload.type == EventType::SWITCH_SCREEN)
@@ -29,7 +27,6 @@ int main(int argc, char **argv)
 {
     // Event/Screen
     EventHandler handler;
-    UserInterface &ui = UserInterface::GetInstance();
 
     // Page declaration
     Page1 page1(handler);
