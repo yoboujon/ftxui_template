@@ -5,7 +5,7 @@ project(
   HOMEPAGE_URL "https://www.etheryo.fr/"
   LANGUAGES CXX C
 )
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)  # Because using std::any, ftxui uses C++17 too.
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
