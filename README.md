@@ -3,6 +3,8 @@
 ![Static Badge](https://img.shields.io/badge/builds_on-Linux-brightgreen)
 ![Static Badge](https://img.shields.io/badge/builds_on-Windows-brightgreen)
 
+![index](img/index.gif)
+
 Template example using the [FTXUI](https://github.com/ArthurSonzogni/FTXUI) library with a proper logger, thread-safe event handler and multiple pages paradigm. This template can be used in any project and is a good way to start a project using a simple and not-so-verbose approach.
 
 ## Build the project
@@ -55,7 +57,7 @@ void Page1::change_screen()
 
 ### Logger
 
-_'Logger'_ is a general Logger that can be instanciated anywhere as a singleton. It can have a maximum size for its buffer that can be changed on the go.Each LoggerType can be gathered from each data which can lead to multiple ways to print out a log.
+_'Logger'_ is a general Logger that can be instanciated anywhere as a singleton. It can have a maximum size for its buffer that can be changed on the go. Each LoggerType can be gathered from each data which can lead to multiple ways to print out a log.
 
 ```cpp
 Logger& logger = Logger::GetInstance();
